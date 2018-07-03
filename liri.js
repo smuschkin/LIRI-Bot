@@ -75,6 +75,4 @@ var commands = function(command, data) {
 var start = function(argOne, argTwo) {
     commands(argOne, argTwo);
   };
-  // MAIN PROCESS
-  // =====================================
   start(process.argv[2], process.argv[3]);
