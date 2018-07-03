@@ -8,19 +8,22 @@ var fs = require("fs");
 
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
+var thing = process.argv;
+var song = "";
+var movie = "";
 
-var searchSongs = function () {
-    spotify.search({ type: 'track', query: 'All the Small Things' }, function (err, data) {
+var searchSongs = function (song) {
+    spotify.search({ type: "track", query: song }, function (err, data) {
         if (err) {
-            return console.log('Error occurred: ' + err);
+            return console.log("Error occurred: " + err);
         }
         var songResults = data.tracks.items;
         for (var i = 0; i < songResults.length; i++) {
             console.log[i];
             console.log("Artist(s): " + songResults[i].artists[0].name);
             console.log("Song Name: " + songResults[i].name);
-            console.log("Preview Link: " + songResults[i].preview_URL);
-            console.log("Album: " + songResults[i].album);
+            console.log("Preview Link: " + songResults[i].preview_url);
+            console.log("Album: " + songResults[i].album.name);
         };
     });
 };
@@ -34,45 +37,39 @@ var searchTweets = function () {
         }
     });
 };
-
-var URL = `http://www.omdbapi.com/?apikey=${keys.movie.apiKey}&t=Moana`
 var searchMovie = function (movie) {
+    var URL = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=trilogy";
     request(URL, function (error, response, body) {
-        console.log('error:', error); // Print the error if one occurred
-        console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-        // console.log('body:', body); // Print the HTML for the Google homepage.
-        var movieReponse = JSON.parse(body);
-        for (var i = 0; i < movieReponse.length; i++) {
-            console.log(movieReponse.Title);
-            console.log('Title: ' + movie.Title);
-            console.log('Year: ' + movie.Year);
-            console.log('IMDB Rating: ' + movie.imdbRating);
-            console.log('Rotten Tomatoes: ' + movie.tomatoURL);
-            console.log('Country: ' + movie.Country);
-            console.log('Language: ' + movie.Language);
-            console.log('Plot: ' + movie.Plot);
-            console.log('Actors: ' + movie.Actors);
-        };
-    });
-};
+        if (!error && response.statusCode === 200) {
+            var movieReponse = JSON.parse(body);
+                console.log(movieReponse.Title);
+                console.log('Title: ' + movieReponse.Title);
+                console.log('Year: ' + movieReponse.Year);
+                console.log('IMDB Rating: ' + movieReponse.imdbRating);
+                console.log('Rotten Tomatoes: ' + movieReponse.Ratings[1].Value);
+                console.log('Country: ' + movieReponse.Country);
+                console.log('Language: ' + movieReponse.Language);
+                console.log('Plot: ' + movieReponse.Plot);
+                console.log('Actors: ' + movieReponse.Actors);
+            };
+        });
+    };
 
-var commands = function(command, data) {
-    switch (command) {
+var commands = function (doStuff, thing) {
+    switch (doStuff) {
         case "my-tweets":
             searchTweets();
             break;
         case "spotify-this-song":
-            searchSongs();
+            searchSongs(thing);
             break;
         case "movie-this":
-            searchMovie();
-            break;
-        default:
+            searchMovie(thing);
             break;
     };
 };
 
-var start = function(argOne, argTwo) {
+var doStuff = function (argOne, argTwo) {
     commands(argOne, argTwo);
-  };
-  start(process.argv[2], process.argv[3]);
+};
+doStuff(process.argv[2], process.argv[3]);
