@@ -12,6 +12,19 @@ var thing = process.argv;
 var song = "";
 var movie = "";
 
+var readStuff = function () {
+    fs.readFile("random.txt", "utf8", function (err, data) {
+        console.log(data);
+        if (err) {
+            return console.log(err);
+        }
+        var output = data.split(",");
+        if (output.length === 2) {
+            commands(output[0], output[1]);
+        }
+    });
+};
+
 var searchSongs = function (song) {
     spotify.search({ type: "track", query: song }, function (err, data) {
         if (err) {
@@ -42,18 +55,18 @@ var searchMovie = function (movie) {
     request(URL, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             var movieReponse = JSON.parse(body);
-                console.log(movieReponse.Title);
-                console.log('Title: ' + movieReponse.Title);
-                console.log('Year: ' + movieReponse.Year);
-                console.log('IMDB Rating: ' + movieReponse.imdbRating);
-                console.log('Rotten Tomatoes: ' + movieReponse.Ratings[1].Value);
-                console.log('Country: ' + movieReponse.Country);
-                console.log('Language: ' + movieReponse.Language);
-                console.log('Plot: ' + movieReponse.Plot);
-                console.log('Actors: ' + movieReponse.Actors);
-            };
-        });
-    };
+            console.log(movieReponse.Title);
+            console.log('Title: ' + movieReponse.Title);
+            console.log('Year: ' + movieReponse.Year);
+            console.log('IMDB Rating: ' + movieReponse.imdbRating);
+            console.log('Rotten Tomatoes: ' + movieReponse.Ratings[1].Value);
+            console.log('Country: ' + movieReponse.Country);
+            console.log('Language: ' + movieReponse.Language);
+            console.log('Plot: ' + movieReponse.Plot);
+            console.log('Actors: ' + movieReponse.Actors);
+        };
+    });
+};
 
 var commands = function (doStuff, thing) {
     switch (doStuff) {
@@ -65,6 +78,9 @@ var commands = function (doStuff, thing) {
             break;
         case "movie-this":
             searchMovie(thing);
+            break;
+        case "do-what-it-says":
+            readStuff();
             break;
     };
 };
